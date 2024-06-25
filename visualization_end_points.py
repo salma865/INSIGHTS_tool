@@ -1,4 +1,8 @@
+from typing import List
+
 from fastapi import FastAPI, UploadFile, File, Form
+from pydantic import BaseModel
+
 import visualization as iv
 import json
 
@@ -78,3 +82,22 @@ async def update_title_endpoint(fig_json: str = Form(...), title: str = Form(...
     updated_fig = iv.update_title(fig, title)
     updated_fig_json = iv.to_json(updated_fig)
     return {"plot": updated_fig_json}
+
+
+class InputValues(BaseModel):
+    first: str = Form(...)
+    second: str = Form(...)
+    numerical: List[str]
+    categorical: List[str]
+
+
+class OutputValues(BaseModel):
+    results: List[str]
+
+
+# ---------------------------filter charts-----------------------------------
+@app.post("/filter-charts")
+async def filter_charts_endpoint(inputvalues: InputValues):
+    vaild_charts = iv.filter_charts(inputvalues.first, inputvalues.second, inputvalues.numerical,
+                                    inputvalues.categorical)
+    return {"valid_charts": OutputValues(results=vaild_charts)}

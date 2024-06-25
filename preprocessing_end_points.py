@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form,HTTPException
 import pandas as pd
 import preprocessing as pre
 import visualization as iv
@@ -9,18 +9,24 @@ app = FastAPI()
 
 
 @app.post("/preprocessing")
-async def preprocessing_endpoint(file: UploadFile = File(...)):
-    df = pd.read_csv(file.file)
+async def preprocessing_endpoint(file: UploadFile = File(...), check: str = Form(...)):
 
-    # Perform preprocessing
-    num_stats, cat_stats, preprocessed_data, fig = pre.preprocessing(df)
-    fig_json = iv.to_json(fig)
-    # Return the preprocessing results
-    return {
-        "numerical_statistics": num_stats,
-        "categorical_statistics": cat_stats,
-        "preprocessed_data": preprocessed_data.to_dict(orient="records"),
-        "heatmap": fig_json}
+    try:
+        if check == "numeric":
+            df = pd.read_csv(file.file)
+            # Perform preprocessing
+            num_stats, cat_stats, preprocessed_data = pre.preprocessing(df)
+            # Return the preprocessing results
+            return {
+                "numerical_statistics": num_stats,
+                "categorical_statistics": cat_stats,
+                "preprocessed_data": preprocessed_data.to_dict(orient="records")
+            }
+        else:
+            df = pd.read_csv(file.file)
+            return {"df": df}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"time series Error: {str(e)}")
 
 
 # ------------------------------------------types_splitting_encoding------------------------
