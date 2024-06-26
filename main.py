@@ -1,20 +1,36 @@
 from typing import List
 
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request, HTTPException
 from pydantic import BaseModel
-
+import uvicorn
 import visualization as iv
 import json
-
+import pandas as pd
+import preprocessing as pre
+import numpy as np
 
 app = FastAPI()
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        # np series
+        if isinstance(obj, pd.Series):
+            return obj.to_list()
+        return super(NpEncoder, self).default(obj)
 
 
 # -----------------------------endpoint_histogram-------------------
 @app.post("/create-histogram")
 async def create_histogram_endpoint(data: dict = Form(...), x: str = Form(...), dist: str = Form(None),
-                                   color: str = Form(None), bins: int = Form(50), func: str = Form('count'),
-                                   norm: str = Form('')):
+                                    color: str = Form(None), bins: int = Form(50), func: str = Form('count'),
+                                    norm: str = Form('')):
     fig = iv.create_histogram(data, x, dist, color, bins, func, norm)
     fig_json = iv.to_json(fig)
     return {"histogram": fig_json}
@@ -84,6 +100,32 @@ async def update_title_endpoint(fig_json: str = Form(...), title: str = Form(...
     return {"plot": updated_fig_json}
 
 
+# --------------------------------------------preprocessing_encoding-----------------
+@app.post("/preprocessing")
+async def preprocessing_endpoint(file: UploadFile = File(...), check: str = Form(...)):
+    try:
+        df = pd.read_csv(file.file)
+        nums, cats = pre.types_splitting(df)
+        if check == "numeric":
+            # Perform preprocessing
+            num_stats, cat_stats, preprocessed_data = pre.preprocessing(df)
+            # Return the preprocessing results
+            return {
+                "numerical_statistics": json.loads(json.dumps(num_stats, cls=NpEncoder)),
+                "categorical_statistics": json.loads(json.dumps(cat_stats, cls=NpEncoder)),
+                "preprocessed_data": preprocessed_data.to_dict(orient="records"),
+                "numerical_columns": nums,
+                "categorical_columns": cats
+            }
+        else:
+            return {
+                "preprocessed_data": df.to_dict(orient="records"),
+                "numerical_columns": nums,
+                "categorical_columns": cats
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"time series Error: {str(e)}")
+
 class InputValues(BaseModel):
     first: str = Form(...)
     second: str = Form(...)
@@ -98,6 +140,13 @@ class OutputValues(BaseModel):
 # ---------------------------filter charts-----------------------------------
 @app.post("/filter-charts")
 async def filter_charts_endpoint(inputvalues: InputValues):
-    vaild_charts = iv.filter_charts(inputvalues.first, inputvalues.second, inputvalues.numerical,
-                                    inputvalues.categorical)
+    vaild_charts = iv.filter_charts(
+        inputvalues.first,
+        inputvalues.second,
+        inputvalues.numerical,
+        inputvalues.categorical
+    )
     return {"valid_charts": OutputValues(results=vaild_charts)}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
