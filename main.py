@@ -8,6 +8,7 @@ import json
 import pandas as pd
 import preprocessing as pre
 import numpy as np
+from typing import Any, Dict
 
 app = FastAPI()
 
@@ -27,57 +28,99 @@ class NpEncoder(json.JSONEncoder):
 
 
 # -----------------------------endpoint_histogram-------------------
+class HistogramRequest(BaseModel):
+    data: List[Dict]
+    x: str
+    dist: str = None
+    color: str = None
+    bins: int = 50
+    func: str = 'count'
+    norm: str = ''
+
 @app.post("/create-histogram")
-async def create_histogram_endpoint(data: dict = Form(...), x: str = Form(...), dist: str = Form(None),
-                                    color: str = Form(None), bins: int = Form(50), func: str = Form('count'),
-                                    norm: str = Form('')):
-    fig = iv.create_histogram(data, x, dist, color, bins, func, norm)
+async def create_histogram_endpoint(request: HistogramRequest):
+    fig = iv.create_histogram(request.data, request.x, request.dist, request.color, request.bins, request.func,
+                              request.norm)
     fig_json = iv.to_json(fig)
     return {"histogram": fig_json}
 
 
 # ----------------------------endpoint_linechart-----------------------
+
+class LinechartRequest(BaseModel):
+    data: List[Dict]
+    x: str
+    y: str
+    dist: str = None
+    shape: str = 'linear'
+    color: str = None
+
 @app.post("/create-linechart")
-async def create_linechart_endpoint(data: dict = Form(...), x: str = Form(...), y: str = Form(...),
-                                    dist: str = Form(None), shape: str = Form('linear'), color: str = Form(None)):
-    fig = iv.create_linechart(data, x, y, dist, shape, color)
+async def create_linechart_endpoint(request: LinechartRequest):
+    fig = iv.create_linechart(request.data, request.x, request.y, request.dist, request.shape, request.color)
     fig_json = iv.to_json(fig)
     return {"linechart": fig_json}
 
 
 # ----------------------------endpoint_barchart-----------------------
+
+class BarchartRequest(BaseModel):
+    data: List[Dict]
+    x: str
+    y: str
+    dist: str = None
+    mode: str = None
+    color: str = None
 @app.post("/create-barchart")
-async def create_barchart_endpoint(data: dict = Form(...), x: str = Form(...), y: str = Form(...),
-                                   dist: str = Form(None), mode: str = Form(None), color: str = Form(None)):
-    fig = iv.create_barchart(data, x, y, dist, mode, color)
+async def create_barchart_endpoint(request: BarchartRequest):
+    fig = iv.create_barchart(request.data, request.x, request.y, request.dist, request.mode, request.color)
     fig_json = iv.to_json(fig)
     return {"barchart": fig_json}
 
 
 # ----------------------------endpoint_boxplot-------------------------
+
+class BoxplotRequest(BaseModel):
+    data: List[Dict]
+    y: str
+    dist: str = None
+    points: str = None
+    color: str = None
 @app.post("/create-boxplot")
-async def create_boxplot_endpoint(data: dict = Form(...), y: str = Form(...), dist: str = Form(None),
-                                  points: str = Form(None), color: str = Form(None)):
-    fig = iv.create_boxplot(data, y, dist, points, color)
+async def create_boxplot_endpoint(request: BoxplotRequest):
+    fig = iv.create_boxplot(request.data, request.y, request.dist, request.points, request.color)
     fig_json = iv.to_json(fig)
     return {"boxplot": fig_json}
 
 
 # ----------------------------endpoint_pie_chart-------------------------
+
+class PiechartRequest(BaseModel):
+    data: List[Dict]
+    values: str
+    names: str
+    color: str = None
 @app.post("/create-pie-chart")
-async def create_pie_chart_endpoint(data: dict = Form(...), values: str = Form(...), names: str = Form(...),
-                                    color: str = Form(None)):
-    fig = iv.create_pie_chart(data, values, names, color)
+async def create_pie_chart_endpoint(request: PiechartRequest):
+    fig = iv.create_pie_chart(request.data, request.values, request.names, request.color)
     fig_json = iv.to_json(fig)
     return {"piechart": fig_json}
 
 
 # ----------------------------endpoint_scatterplot-------------------------
+
+class ScatterplotRequest(BaseModel):
+    data: List[Dict]
+    x: str
+    y: str
+    dist: str = None
+    size: str = None
+    symbol: str = None
+    color: str = None
 @app.post("/create-scatter-plot")
-async def create_scatter_plot_endpoint(data: dict = Form(...), x: str = Form(...), y: str = Form(...),
-                                       dist: str = Form(None), size: str = Form(None),
-                                       symbol: str = Form(None), color: str = Form(None)):
-    fig = iv.create_scatter_plot(data, x, y, dist, size, symbol, color)
+async def create_scatter_plot_endpoint(request: ScatterplotRequest):
+    fig = iv.create_scatter_plot(request.data, request.x, request.y, request.dist, request.size, request.symbol,
+                                 request.color)
     fig_json = iv.to_json(fig)
     return {"scatterplot": fig_json}
 
