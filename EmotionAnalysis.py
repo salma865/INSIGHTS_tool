@@ -91,14 +91,16 @@ def visualize_emotion_distribution(data):
 
 
 def Emotion_analysis(data):
-    df = data.loc[:500]
-    df['text'] = df['text'].apply(preprocess_text)
-    df['emotions'] = df['text'].apply(emotion_analysis)
-    fig = visualize_emotion_distribution(df)
+    data['text'] = data['text'].apply(preprocess_text)
+    data['emotions'] = data['text'].apply(emotion_analysis)
+    fig = visualize_emotion_distribution(data)
     return fig
 
 
 # Data = pd.read_csv("all_tweets.csv")
+# Data = Data.loc[:500]
+# Data.to_csv('all_tweets.csv', index=False)
+# print(Data)
 # fig = Emotion_analysis(Data)
 # fig.show()
 

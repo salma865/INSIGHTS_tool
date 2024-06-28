@@ -19,6 +19,7 @@ def silhouette_scorer(estimator, X):
 # build customer_segmentation model
 def customer_segmentation(data):
     data.drop(columns=['Cluster'], inplace=True)
+    data.drop(columns=['id'], inplace=True)
     pca = PCA(2)
     # Transform the data
     data = pca.fit_transform(data)
@@ -69,7 +70,8 @@ def customer_segmentation(data):
     return fig
 
 
-# df = pd.read_csv("Mall_Customers.csv")
-# numerical_statistics, categorical_statistics, data = prepro.preprocessing(df)
+# Data = pd.read_csv("Mall_Customers.csv")
+# num, cat = prepro.types_splitting(Data)
+# numerical_statistics, categorical_statistics, data = prepro.preprocessing(Data)
 # fig = customer_segmentation(data)
 # fig.show()

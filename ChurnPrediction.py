@@ -85,7 +85,7 @@ def churn_prediction(df, target):
     return fig
 
 
-#Data = pd.read_csv('ChurnPrediction.csv')
-#numerical_stat, categorical_stat, Preprocessed_data = prepro.preprocessing(Data)
-#fig = churn_prediction(Data, 'Churn')
-#fig.show()
+# Data = pd.read_csv('ChurnPrediction.csv')
+# numerical_stat, categorical_stat, Preprocessed_data = prepro.preprocessing(Data)
+# fig = churn_prediction(Data, 'Churn')
+# fig.show()

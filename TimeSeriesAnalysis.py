@@ -74,13 +74,14 @@ def evaluate_model_arima(data):
 
 
 def time_series_analysis(data, target):
+    data.drop(columns='id', inplace=True)
     check_stationary(data, target)
     final_fitted = evaluate_model_arima(data[target])
     fig = visualize_arima(data[target], final_fitted)
-    fig.show()
     return fig
 
 
 # Data = pd.read_csv('women_clothing_ecommerce_sales.csv')
+# num, cat = prepro.types_splitting(Data)
 # numerical_stat, categorical_stat, Preprocessed_data = prepro.preprocessing(Data)
 # time_series_analysis(Data, 'revenue')
