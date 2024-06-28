@@ -46,6 +46,7 @@ def create_barchart(data, x, y, dist=None, mode=None, color=None):
 
 
 def churn_prediction(df, target):
+    df.drop(columns='id', inplace=True)
     p1, acc1 = train_logistic_regression(df, target)
     p2, acc2 = train_svm_regression(df, target)
     if acc1 > acc2:
@@ -84,7 +85,7 @@ def churn_prediction(df, target):
     return fig
 
 
-# Data = pd.read_csv('ChurnPrediction.csv')
-# numerical_stat, categorical_stat, Preprocessed_data = prepro.preprocessing(Data)
-# fig = churn_prediction(Data, 'Churn')
-# fig.show()
+#Data = pd.read_csv('ChurnPrediction.csv')
+#numerical_stat, categorical_stat, Preprocessed_data = prepro.preprocessing(Data)
+#fig = churn_prediction(Data, 'Churn')
+#fig.show()

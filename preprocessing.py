@@ -96,7 +96,7 @@ def date_handling(data):
 
 
 def preprocessing(data):
-    drop_ids(data)
+    #drop_ids(data)
     numerical, categorical = types_splitting(data)
     handling_nulls(data, numerical, categorical)
     handling_duplicates(data)
@@ -130,7 +130,13 @@ def num_stat(data, nums):
     return stat
 
 
-# Data = pd.read_csv('all_tweets.csv')
-# numerical_stat, categorical_stat, Preprocessed_data = preprocessing(Data)
+Data = pd.read_csv('ChurnPrediction.csv')
+print(Data)
+cat, num = types_splitting(Data)
+numerical_stat, categorical_stat, Preprocessed_data = preprocessing(Data)
 # Preprocessed_data.to_csv('cleaned_data.csv', index=False)
-
+print(numerical_stat)
+print(categorical_stat)
+print(num)
+print(cat)
+print(Preprocessed_data)
