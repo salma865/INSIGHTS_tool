@@ -7,11 +7,11 @@ import pandas as pd
 # ---------------------------- Charts Filter ----------------------------
 def filter_charts(first, second, numerical, categorical):
     valid_charts = []
-    if first is not None and second is None:
+    if first is not '' and second is '':
         if first in numerical:
             valid_charts.append("histogram")
             valid_charts.append("box_plot")
-    elif first is not None and second is not None:
+    elif first is not '' and second is not '':
         if first in numerical and second in numerical:
             valid_charts.append("scatter_plot")
         elif first in numerical and second in categorical:
@@ -76,6 +76,10 @@ def to_json(fig):
 
 
 # Data = pd.read_csv('loan_sanction_train.csv')
+# num = ['ApplicantIncome']
+# cat = ['']
+# l = filter_charts('ApplicantIncome','', num, cat)
+# print(l)
 # hist = create_histogram(Data, 'ApplicantIncome', 'Gender', bins=100)
 # line = create_linechart(Data, 'Loan_ID', 'ApplicantIncome')
 # bar = create_barchart(Data, 'Gender', 'ApplicantIncome', 'Married')
